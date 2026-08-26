@@ -1,0 +1,11 @@
+data/
+models/
+reports/
+*.pyc
+__pycache__/
+.venv/
+.env
+*.egg-info/
+.ipynb_checkpoints/
+.pytest_cache/
+.ruff_cache/

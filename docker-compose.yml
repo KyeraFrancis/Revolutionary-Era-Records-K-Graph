@@ -1,0 +1,27 @@
+services:
+  neo4j:
+    image: neo4j:5
+    environment:
+      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:-change-me}
+      NEO4J_PLUGINS: '["apoc"]'
+    ports: ["7474:7474", "7687:7687"]
+    volumes: ["neo4j_data:/data"]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:7474"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  pipeline:
+    build: .
+    depends_on:
+      neo4j: { condition: service_healthy }
+    environment:
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:-change-me}
+      HF_HOME: /app/data/hf
+    volumes: ["./data:/app/data", "./reports:/app/reports", "./models:/app/models"]
+    # override neo4j uri for in-network access
+    command: ["build-graph", "--config", "configs/docker.yaml"]
+
+volumes:
+  neo4j_data:

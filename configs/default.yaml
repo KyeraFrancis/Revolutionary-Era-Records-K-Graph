@@ -1,0 +1,53 @@
+# Shared configuration. Override any key with a second YAML passed via --config.
+data:
+  cache_dir: data/cache
+  images_dir: data/images
+  nara:
+    dataset: RevolutionCrossroads/nara_revolutionary_war_pension_files
+    revision: null            # pin a tag for reproducibility once you choose one
+    image_col: pageImageURL
+    truth_col: transcriptionText
+    baseline_cols: [fs_extractedText, RevX_OCR_text]
+    id_col: pageObjectId
+    file_col: NAID
+    names_col: extractedNames
+    sample_size: 2000         # pages with a human transcription to pull for fine-tuning/eval
+  smithsonian:
+    dataset: RevolutionCrossroads/si_us_revolutionary_era_collections
+    revision: null
+    id_col: EDANid
+    text_col: RevX_OCR_text
+    names_col: indexed_names
+    places_col: indexed_places
+    dates_col: indexed_dates
+  chronam:
+    dataset: RevolutionCrossroads/loc_chronicling_america_1770-1810
+    revision: null
+    text_col: RevX_OCR_text   # verify against the dataset card; loader falls back to first *ocr* column
+    id_col: null              # auto-detect
+    date_col: null            # auto-detect
+
+ocr:
+  base_model: microsoft/trocr-base-handwritten
+  output_dir: models/trocr-revwar
+  max_target_len: 256
+  line_height: 384
+  epochs: 5
+  batch_size: 8
+  lr: 5.0e-5
+  eval_split: 0.1
+  seed: 42
+
+eval:
+  slices: [pageImageType, levelOfDescription]   # columns to slice CER/WER by
+  report_path: reports/ocr_eval.json
+
+graph:
+  uri: bolt://localhost:7687
+  user: neo4j
+  password: ${NEO4J_PASSWORD}
+  batch_size: 500
+
+link:
+  name_threshold: 92          # rapidfuzz token_set_ratio 0-100
+  min_name_tokens: 2
