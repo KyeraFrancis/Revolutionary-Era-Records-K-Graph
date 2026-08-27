@@ -49,6 +49,11 @@ docker compose up --build
 open http://localhost:7474      # Neo4j browser
 ```
 
+The datasets are public and CC0, so downloads work unauthenticated — the Hub prints a
+`You are sending unauthenticated requests to the HF Hub` warning in that case. Set `HF_TOKEN`
+in `.env` (a read token from https://huggingface.co/settings/tokens) to silence it and get
+higher rate limits and faster downloads.
+
 Example Cypher once loaded:
 
 ```cypher
